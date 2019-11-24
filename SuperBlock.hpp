@@ -7,7 +7,6 @@ using namespace std;
 
 class SuperBlock {
     private:
-    // char free_block_list[16];
         bitset<NUM_BLOCKS> free_block_list;
         Inode inode[NUM_NODES];
         bool checkFreeList();

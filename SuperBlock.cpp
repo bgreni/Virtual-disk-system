@@ -6,8 +6,11 @@ SuperBlock::SuperBlock() {}
 
 
 int SuperBlock::checkConsistency() {
-    if (!checkFreeList()) {
+    if (checkFreeList()) {
         return 1;
+    }
+    else if (!checkUniqueNames()) {
+        return 2;
     }
     return 0;
 }
@@ -38,5 +41,18 @@ bool SuperBlock::checkFreeList() {
             return false;
         }
     }
+    return true;
+}
+
+
+
+bool SuperBlock::checkUniqueNames() {
+    for (int i = 0; i < NUM_BLOCKS; i++) {
+        string name = inode[i].getName();
+        if (name.length() != 0) {
+            cout << name << endl;
+        }
+    }
+
     return true;
 }
