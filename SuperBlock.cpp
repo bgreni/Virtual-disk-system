@@ -49,7 +49,7 @@ bool SuperBlock::checkFreeList() {
 bool SuperBlock::checkUniqueNames() {
     for (int i = 0; i < NUM_BLOCKS; i++) {
         string name = inode[i].getName();
-        if (name.length() != 0) {
+        if (name.empty()) {
             cout << name << endl;
         }
     }

@@ -88,10 +88,11 @@ void CommandParser::tokenize(const string &commandString) {
     while (getline(ss, token, ' ')) {
         commandTokens.push_back(token);
     }
-
-    for(string s : commandTokens) {
-        s.erase(remove_if(s.begin(), s.end(), ::isspace));
-    }
+    
+    // TODO: this crashes on linux
+    // for(string s : commandTokens) {
+    //     s.erase(remove_if(s.begin(), s.end(), ::isspace));
+    // }
 }
 
 bool CommandParser::nameTooLong(const string &name) {
