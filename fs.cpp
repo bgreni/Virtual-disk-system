@@ -30,4 +30,6 @@ int main(int argc, char* argv[]) {
         }
         commandQueue.pop();
     }
+    fs.close();
+    return 0;
 }

@@ -7,7 +7,7 @@ using namespace std;
 
 class Inode {
 	private:
-		string name;        // Name of the file or directory
+		char name[5];        // Name of the file or directory
 		uint8_t usedSize;   // Inode state and the size of the file or directory
 		uint8_t startBlock; // Index of the start file block
 		uint8_t parent;  // Inode mode and the index of the parent inode
@@ -24,4 +24,9 @@ class Inode {
 
 		bool nodeInUse();
 		bool blockInNodeRange(int index);
+		bool nodeIsClean();
+		bool hasName();
+		bool isAFile();
+		bool checkStartBlock();
+		bool checkDirectoryAttributes();
 };

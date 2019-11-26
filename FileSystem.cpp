@@ -30,21 +30,24 @@ void FileSystem::fs_mount(const string &new_disk_name) {
 
     SuperBlock superBlock = SuperBlock();
     
-    diskFile.open(new_disk_name);
+    diskFile.open(new_disk_name, ios::in | ios::out | ios::binary);
     if (!diskFile.is_open()) {
         cerr << "Error: Cannot find disk: " << new_disk_name << endl;
 
     }
+
     // somehow the c-style way of doing this works better
-    diskFile.read((char*)&superBlock, sizeof(SuperBlock));
+    diskFile.read((char*)&superBlock, BLOCK_SIZE);
 
-    int consistencyErrCode = superBlock.checkConsistency();
+    cout << superBlock.free_block_list << endl;
 
-    if (consistencyErrCode != 0) {
-        cout << "Error: File system in " << new_disk_name << " is inconsistent (error code: " << consistencyErrCode << ")" << endl;
-    } else {
-        diskIsMounted = true;
-    }
+    // int consistencyErrCode = superBlock.checkConsistency();
+
+    // if (consistencyErrCode != 0) {
+    //     cout << "Error: File system in " << new_disk_name << " is inconsistent (error code: " << consistencyErrCode << ")" << endl;
+    // } else {
+    //     diskIsMounted = true;
+    // }
     
     // cout << superBlock.free_block_list.to_string() << endl;
 
@@ -71,6 +74,12 @@ void FileSystem::runCommand(vector<string> tokens) {
     if (command == MOUNT) {
         fs_mount(tokens[1]);
     }
+}
+
+
+void FileSystem::close() {
+    diskFile.close();
+    inputFile.close();
 }
 
 

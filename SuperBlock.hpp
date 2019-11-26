@@ -7,11 +7,15 @@ using namespace std;
 
 class SuperBlock {
     private:
-        bitset<NUM_BLOCKS> free_block_list;
-        Inode inode[NUM_NODES];
+        
         bool checkFreeList();
         bool checkUniqueNames();
+        bool checkFreeNodes();
+        bool checkFileStart();
+        bool checkDirectories();
     public:
+    bitset<NUM_BLOCKS> free_block_list;
+        Inode inode[NUM_NODES];
         SuperBlock();
         int checkConsistency();
 };

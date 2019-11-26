@@ -20,6 +20,7 @@ const size_t LEN_CREATE_COMMAND = 3;
 const size_t MAX_BUFF_LEN = 1024;
 const size_t MIN_BLOCK_NUM = 1;
 const size_t MAX_BLOCK_NUM = 127;
+const size_t BLOCK_SIZE = 1024;
 
 const string MOUNT = "M";
 const string CREATE = "C";

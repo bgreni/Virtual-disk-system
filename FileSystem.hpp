@@ -32,4 +32,5 @@ class FileSystem {
 		bool openInputFile(const string &filename);
 		queue<string> readCommands();
 		void runCommand(vector<string> tokens);
+		void close();
 };
