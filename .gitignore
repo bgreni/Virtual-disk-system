@@ -3,3 +3,5 @@
 .vscode/
 *.o
 fs
+.VSCodeCounter/
+tests

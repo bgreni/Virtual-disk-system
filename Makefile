@@ -15,9 +15,11 @@ clean:
 	-rm *.o $(objects)
 	-rm fs
 
+tests: tests.cpp FileSystem.cpp Inode.cpp SuperBlock.cpp CommandParser.cpp Constants.hpp
+	$(COMP) tests tests.cpp FileSystem.cpp Inode.cpp SuperBlock.cpp CommandParser.cpp
 
-FileSystem.o: FileSystem.cpp FileSystem.hpp
+FileSystem.o: FileSystem.cpp FileSystem.hpp Constants.hpp
 fs.o: fs.cpp
-Inode.o: Inode.cpp Inode.hpp
-SuperBlock.o: SuperBlock.cpp SuperBlock.hpp
-CommandParser.o: CommandParser.cpp CommandParser.hpp
+Inode.o: Inode.cpp Inode.hpp Constants.hpp
+SuperBlock.o: SuperBlock.cpp SuperBlock.hpp Constants.hpp
+CommandParser.o: CommandParser.cpp CommandParser.hpp Constants.hpp

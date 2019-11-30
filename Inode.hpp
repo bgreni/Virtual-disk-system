@@ -13,6 +13,7 @@ class Inode {
 		uint8_t parent;  // Inode mode and the index of the parent inode
 	public:
 		Inode();
+		Inode(const string &name, int size, int startBlock, int parent);
 		string getName();
 		void setName(string newName);
 		uint8_t getUsedSize();
@@ -21,6 +22,9 @@ class Inode {
 		void setStartBlock(uint8_t newStartBlock);
 		uint8_t getParent();
 		void setParent(uint8_t newParent);
+		void setInUse(bool inUse);
+		void setIsFile(bool isFile);
+		int getEndIndex();
 
 		bool nodeInUse();
 		bool blockInNodeRange(int index);
@@ -29,4 +33,6 @@ class Inode {
 		bool isAFile();
 		bool checkStartBlock();
 		bool checkDirectoryAttributes();
+
+		string str();
 };
