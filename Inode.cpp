@@ -2,6 +2,7 @@
 #include "Constants.hpp"
 #include <iostream>
 #include <sstream>
+#include <cstring>
 
 using namespace std;
 
@@ -10,7 +11,7 @@ Inode::Inode() {
     startBlock = 0;
     parent = 0;
     for (int i = 0; i < 5; i++) {
-        name[i] = '\0';
+        name[i] = 0;
     }
 }
 
@@ -73,7 +74,15 @@ bool Inode::checkDirectoryAttributes() {
 ///////////////////////////////////////////////////
 
 string Inode::getName() {
-    return string(name,5);
+    stringstream ss;
+    for(int i = 0; i < MAX_NAME_LEN; i++) {
+        if (name[i] == 0) {
+            break;
+        }
+        ss << name[i];
+    }
+
+    return ss.str();
 }
 
 void Inode::setName(string newName) {

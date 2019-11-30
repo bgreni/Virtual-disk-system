@@ -20,14 +20,17 @@ int main(int argc, char* argv[]) {
     queue<string> commandQueue = fs.readCommands();
 
     cout << commandQueue.size() << endl;
-
+    int i = 1;
     while (!commandQueue.empty()) {
         // cout << commandQueue.front() << endl;
         vector<string> tokens = parser.parse(commandQueue.front());
         // cout << "Command is valid: " << parser.validate() << endl;
         if (parser.validate()) {
             fs.runCommand(tokens);
+        } else {
+            cerr << "Command Error: " << filename << ", " << i << endl;
         }
+        i++;
         commandQueue.pop();
     }
     fs.close();

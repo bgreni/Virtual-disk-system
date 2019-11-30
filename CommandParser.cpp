@@ -75,6 +75,13 @@ bool CommandParser::validOneArgOp() {
     return false;
 }
 
+bool CommandParser::validCreateOp() {
+    if (commandTokens.size() == TWO_ARG_COMMAND && (!nameTooLong(commandTokens[1])) && validCreateSize(commandTokens[2])) {
+        return true;
+    }
+    return false;
+}
+
 
 
 /////////////////////////////////////////////////
@@ -120,6 +127,19 @@ bool CommandParser::validFileSize(const string &fileSize) {
         return false;
     }
     if (size > -1 && size <= MAX_BLOCK_NUM) {
+        return true;
+    }
+    return false;
+}
+
+bool CommandParser::validCreateSize(const string &size) {
+    int intSize = 0;
+    try {
+        intSize = stoi(size);
+    } catch(invalid_argument e) {
+        return false;
+    }
+    if (intSize >= 0 && intSize <= MAX_BLOCK_NUM) {
         return true;
     }
     return false;

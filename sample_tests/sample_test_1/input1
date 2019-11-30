@@ -4,3 +4,12 @@ B helloworld
 W file1 0
 R file1 0
 L
+C file2 10
+L
+C dir 0
+L
+Y dir
+C file4 10
+L
+Y ..
+L

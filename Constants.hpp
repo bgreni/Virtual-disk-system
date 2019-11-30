@@ -39,15 +39,18 @@ const string RESIZE = "E";
 const string DEFRAG = "O";
 const string CD = "Y";
 
+const string CUR_DIR_STRING = ".";
+const string PARENT_DIR_STRING = "..";
+
 static map<string, FunctionPointer>  commandMap {
     {"M", &CommandParser::checkMount},
-    {"C", &CommandParser::validFileOp},
+    {"C", &CommandParser::validCreateOp},
     {"R", &CommandParser::validReadWrite},
     {"W", &CommandParser::validReadWrite},
     {"E", &CommandParser::validFileOp},
     {"B", &CommandParser::validBuffOp},
     {"L", &CommandParser::validNoArgOp},
     {"O", &CommandParser::validNoArgOp},
-    {"C", &CommandParser::validOneArgOp},
+    {"Y", &CommandParser::validOneArgOp},
     {"D", &CommandParser::validOneArgOp},
 };

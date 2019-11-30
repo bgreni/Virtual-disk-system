@@ -14,6 +14,7 @@ class CommandParser {
         void tokenize(const string &commandString);
         bool blockNumInRange(const string &blockNum);
         bool validFileSize(const string &fileSize);
+        bool validCreateSize(const string &size);
     public:
         bool checkMount();
         bool validReadWrite();
@@ -21,6 +22,7 @@ class CommandParser {
         bool validBuffOp();
         bool validNoArgOp();
         bool validOneArgOp();
+        bool validCreateOp();
         bool validate();
         CommandParser();
         vector<string> parse(const string &commandString);

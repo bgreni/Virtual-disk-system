@@ -18,6 +18,9 @@ void SuperBlock::setNode(Inode node, int index) {
 
 
 Inode SuperBlock::getNode(uint8_t index) {
+    if (index == INVALID_NODE_NUM) {
+        return Inode();
+    }
     return inode[index];
 }
 

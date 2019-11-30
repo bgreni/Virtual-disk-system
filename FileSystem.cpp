@@ -62,7 +62,6 @@ void FileSystem::fs_create(const string &name, int size) {
     superBlock.setNode(newNode, freeIndex);
     superBlock.setBlock(startBlock, startBlock + (size - 1));
     superBlock.buildDirectoryMap();
-    cout << "Create finished" << endl;
 }
 
 
@@ -133,15 +132,15 @@ void FileSystem::fs_ls(void) {
     // print cwd
     vector<uint8_t> dirContents = directoryStructure[currentDirectory];
     int size = dirContents.size() + 2;
-    printDir(".", size);
+    printDir(CUR_DIR_STRING.c_str(), size);
     if (currentDirectory == ROOT_DIR) {
-        printDir("..", size);
+        printDir(PARENT_DIR_STRING.c_str(), size);
     } else {
         Inode node = superBlock.getNode(currentDirectory);
         uint8_t parent = node.getParent();
         vector<uint8_t> parentContents = directoryStructure[parent];
         int parentSize = parentContents.size() + 2;
-        printDir("..", parentSize);
+        printDir(PARENT_DIR_STRING.c_str(), parentSize);
     }
 
     for (auto index : dirContents) {
@@ -159,6 +158,10 @@ void FileSystem::fs_ls(void) {
 void FileSystem::fs_resize(const string &name, int new_size) {
     uint8_t index = superBlock.getInodeIndex(name, currentDirectory);
     Inode node = superBlock.getNode(index);
+    if (new_size > MAX_BLOCK_NUM) {
+        cerr << "Error: File " << node.getName() << " cannot be expanded to size " << new_size << endl;
+        return;
+    }
     if (new_size == node.getUsedSize()) return;
     if (index == INVALID_NODE_NUM || !node.isAFile()) {
         cerr << "Error: " << name << " does not exist" << endl;
@@ -169,6 +172,7 @@ void FileSystem::fs_resize(const string &name, int new_size) {
     } else {
         growBlock(index, node, new_size);
     }
+    cout << superBlock.free_block_list << endl;
 }
 
 void FileSystem::shrinkBlock(uint8_t index, Inode &node, int newSize) {
@@ -230,6 +234,26 @@ void FileSystem::copyBlocks(Inode oldNode, Inode newNode) {
 }
 
 
+void FileSystem::fs_cd(string &name) {
+    if (name == CUR_DIR_STRING) {
+        return;
+    }
+    else if (name == PARENT_DIR_STRING) {
+        if (currentDirectory == ROOT_DIR) {
+            return;
+        }
+        currentDirectory = superBlock.getNode(currentDirectory).getParent();
+    } else {
+        int index = superBlock.getInodeIndex(name, currentDirectory);
+        if (index == INVALID_NODE_NUM) {
+            cerr << "Error: Directory " << name << " does not exist" << endl;
+            return; 
+        }
+        currentDirectory = index;
+    }
+}
+
+
 ///////////////////////////////////////////////////
 // Helpers
 ///////////////////////////////////////////////////
@@ -287,6 +311,9 @@ void FileSystem::runCommand(vector<string> tokens) {
     else if (command == RESIZE) {
         int newSize = stoi(tokens[2]);
         fs_resize(tokens[1], newSize);
+    }
+    else if (command == CD) {
+        fs_cd(tokens[1]);
     }
 }
 
