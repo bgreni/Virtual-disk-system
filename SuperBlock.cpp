@@ -306,6 +306,7 @@ void SuperBlock::deleteNode(const string &name, const uint8_t cwd) {
             deleteNode(childNode.getName(), index);
         }
     }
+    inode[index] = Inode();
 }
 
 
@@ -324,4 +325,16 @@ bool SuperBlock::isFreeBlock(int start, int end) {
             return false;
     }
     return true;
+}
+
+
+int SuperBlock::findNewStartBlock(int oldStart) {
+    int i = oldStart - 1;
+    if (free_block_list[i] == 1) {
+        return -1;
+    }
+    while (free_block_list[i] != 1) {
+        i--;
+    }
+    return i + 1;
 }

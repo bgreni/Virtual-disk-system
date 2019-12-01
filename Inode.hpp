@@ -18,7 +18,7 @@ class Inode {
 		void setName(string newName);
 		uint8_t getUsedSize();
 		void setUsedSize(uint8_t newSize);
-		uint8_t getStartBlock();
+		uint8_t getStartBlock() const;
 		void setStartBlock(uint8_t newStartBlock);
 		uint8_t getParent();
 		void setParent(uint8_t newParent);

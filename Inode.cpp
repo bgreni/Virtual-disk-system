@@ -99,7 +99,7 @@ void Inode::setUsedSize(uint8_t newSize) {
     usedSize |= stateBit;
 }
 
-uint8_t Inode::getStartBlock() {
+uint8_t Inode::getStartBlock() const {
     return startBlock;
 }
 

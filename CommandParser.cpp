@@ -139,7 +139,7 @@ bool CommandParser::validCreateSize(const string &size) {
     } catch(invalid_argument e) {
         return false;
     }
-    if (intSize >= 0 && intSize <= MAX_BLOCK_NUM) {
+    if (intSize >= 0 && intSize <= 126) {
         return true;
     }
     return false;

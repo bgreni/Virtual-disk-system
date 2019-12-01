@@ -3,7 +3,18 @@
 #include <map>
 #include <vector>
 #include<cstdio>
+#include <algorithm>
 using namespace std;
+
+struct defragSorter
+{
+    inline bool operator() (const Inode& node1, const Inode& node2)
+    {
+        return (node1.getStartBlock() < node2.getStartBlock());
+    }
+};
+
+
 
 FileSystem::FileSystem() {
     diskIsMounted = false;
@@ -66,7 +77,11 @@ void FileSystem::fs_create(const string &name, int size) {
 
 
 void FileSystem::fs_delete(const string &name) {
+    cout << "-------------------------------------------" << endl;
+    cout << "BEFORE DELETE: " << superBlock.free_block_list << endl;
     superBlock.deleteNode(name, currentDirectory);
+    cout << "AFTER DELETE: " << superBlock.free_block_list << endl;
+    cout << "-------------------------------------------" << endl;
 }
 
 void FileSystem::fs_read(const string &name, int block_num) {
@@ -187,6 +202,7 @@ void FileSystem::shrinkBlock(uint8_t index, Inode &node, int newSize) {
         buf[i] = 0;
     }
 
+    // zero out unused blocks
     int start = oldEnd * BLOCK_SIZE;
     for (int i = oldEnd; i >= newEnd + 1; i--) {
         diskFile.seekg(start);
@@ -219,7 +235,7 @@ void FileSystem::growBlock(uint8_t index, Inode &node, int newSize) {
 
 void FileSystem::copyBlocks(Inode oldNode, Inode newNode) {
     // use a new buffer in case the global buffer still has something we need
-    uint8_t buf[1024];
+    uint8_t buf[BLOCK_SIZE];
     int oldNodePos = oldNode.getStartBlock() * BLOCK_SIZE;
     int newNodePos = newNode.getStartBlock() * BLOCK_SIZE;
     for (int i = 0; i < oldNode.getUsedSize(); i++) {
@@ -231,6 +247,62 @@ void FileSystem::copyBlocks(Inode oldNode, Inode newNode) {
         oldNodePos += BLOCK_SIZE;
         newNodePos += BLOCK_SIZE;
     }
+}
+
+
+void FileSystem::fs_defrag(void) {
+    vector<Inode> nodeList;
+    nodeList.reserve(127);
+    for (int i = 0; i < MAX_BLOCK_NUM; i++) {
+        Inode node = superBlock.getNode(i);
+        if (node.nodeInUse() && node.isAFile()) {
+            nodeList.push_back(node);
+        }
+    }
+    sort(nodeList.begin(), nodeList.end(), defragSorter());
+    for (auto n : nodeList) {
+        cout << n.str() << endl;
+        optimizeBlockLocation(n);
+    }
+}
+
+
+void FileSystem::optimizeBlockLocation(Inode node) {
+    int index = superBlock.findNewStartBlock(node.getStartBlock());
+    if (index == -1) {
+        // block is already at the optimal position
+        return;
+    }
+    Inode newNode = node;
+    cout << superBlock.free_block_list << endl;
+    cout << index << endl;
+    superBlock.clearBlock(node.getStartBlock(), node.getEndIndex());
+    newNode.setStartBlock(index);
+    superBlock.setBlock(newNode.getStartBlock(), newNode.getEndIndex());
+
+    uint8_t zeroBuf[BLOCK_SIZE];
+    uint8_t readBuf[BLOCK_SIZE];
+    // making sure everything is zeroed out
+    for (int i = 0; i < BLOCK_SIZE; i++) {
+        zeroBuf[i] = 0;
+    }
+
+    int oldStart = node.getStartBlock();
+
+    int pos = oldStart * BLOCK_SIZE;
+    int newPos = newNode.getStartBlock() * BLOCK_SIZE;
+    for (int i = oldStart; i < node.getEndIndex(); i++) {
+        diskFile.seekg(pos);
+        diskFile.read((char*)readBuf, BLOCK_SIZE);
+        diskFile.write((char*)zeroBuf, BLOCK_SIZE);
+
+        diskFile.seekg(newPos);
+        diskFile.write((char*)readBuf, BLOCK_SIZE);
+
+        pos += BLOCK_SIZE;
+        newPos += BLOCK_SIZE;
+    }
+    cout << superBlock.free_block_list << endl;
 }
 
 
@@ -312,6 +384,9 @@ void FileSystem::runCommand(vector<string> tokens) {
         int newSize = stoi(tokens[2]);
         fs_resize(tokens[1], newSize);
     }
+    else if (command == DEFRAG) {
+        fs_defrag();
+    }
     else if (command == CD) {
         fs_cd(tokens[1]);
     }
@@ -329,6 +404,9 @@ void FileSystem::clearBuffer() {
         buffer[i] = 0;
     }
 }
+
+
+
 
 
 

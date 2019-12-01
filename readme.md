@@ -4,3 +4,7 @@ left inode filename as char array so file stream hows how many bytes to read eas
 
 extra error checking:
     check to make sure a disk file name was given
+
+
+figured how to sort inodes here
+https://stackoverflow.com/questions/1380463/sorting-a-vector-of-custom-object

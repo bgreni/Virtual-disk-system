@@ -36,4 +36,5 @@ class SuperBlock {
         void buildDirectoryMap();
         map<uint8_t, vector<uint8_t>> getDirectoryMap();
         bool isFreeBlock(int start, int end);
+        int findNewStartBlock(int oldStart);
 };

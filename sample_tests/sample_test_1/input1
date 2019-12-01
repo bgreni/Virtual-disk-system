@@ -2,14 +2,14 @@ M disk1
 C file1 1
 B helloworld
 W file1 0
-R file1 0
-L
 C file2 10
-L
-C dir 0
-L
-Y dir
-C file4 10
-L
-Y ..
-L
+C file3 12
+C file4 3
+C file5 9
+C file6 20
+C file7 2
+D file6
+D file4
+D file2
+O
+R file1 0

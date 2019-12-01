@@ -24,6 +24,7 @@ class FileSystem {
 		void shrinkBlock(uint8_t index, Inode &node, int newSize);
 		void growBlock(uint8_t index, Inode &node, int newSize);
 		void copyBlocks(Inode oldNode, Inode newNode);
+		void optimizeBlockLocation(Inode node);
 	public:
 		SuperBlock superBlock;
 		FileSystem();
