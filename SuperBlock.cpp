@@ -236,9 +236,9 @@ bool SuperBlock::checkNodeParent() {
 // this is how bad I didn't want to fiddle with bits
 void SuperBlock::fixFreeBlockList() {
     int k;
-    for (int i = 0; i < (NUM_BLOCKS / BITS_IN_BYTE); i++) {
+    for (size_t i = 0; i < (NUM_BLOCKS / BITS_IN_BYTE); i++) {
         int b = 0;
-        for (int j = (i * BITS_IN_BYTE); j < ((i * BITS_IN_BYTE) + (BITS_IN_BYTE / 2)); j++) {
+        for (size_t j = (i * BITS_IN_BYTE); j < ((i * BITS_IN_BYTE) + (BITS_IN_BYTE / 2)); j++) {
             k = BITS_IN_BYTE + (i * BITS_IN_BYTE) - 1 - b;
 
             // std::swap isn't defined for bitsets apparently so doing it manually

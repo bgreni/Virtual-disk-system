@@ -105,10 +105,10 @@ bool CommandParser::nameTooLong(const string &name) {
 }
 
 bool CommandParser::blockNumInRange(const string &blockNum) {
-    int block = 0;
+    size_t block = 0;
     try {
         block = stoi(blockNum);
-    } catch (invalid_argument e) {
+    } catch (invalid_argument) {
         return false;
     }
     if (block >= MIN_BLOCK_NUM && block <= MAX_BLOCK_NUM) {
@@ -118,10 +118,10 @@ bool CommandParser::blockNumInRange(const string &blockNum) {
 }
 
 bool CommandParser::validFileSize(const string &fileSize) {
-    int size = 0;
+    size_t size = 0;
     try {
         size = stoi(fileSize);
-    } catch(invalid_argument e) {
+    } catch(invalid_argument) {
         return false;
     }
     if (size > -1 && size <= MAX_BLOCK_NUM) {
