@@ -338,7 +338,6 @@ void SuperBlock::deleteNode(const string &name, const uint8_t cwd) {
         }
     }
     inode[index] = Inode();
-    assert(!inode[index].nodeInUse());
 }
 
 
