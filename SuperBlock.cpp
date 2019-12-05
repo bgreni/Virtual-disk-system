@@ -3,20 +3,32 @@
 #include <string>
 using namespace std;
 
+// making a global because making it a member variable would read/write from the disk
 map<uint8_t, vector<uint8_t>> directoryStructure;
 
+/**
+ * @brief default constructor
+*/
 SuperBlock::SuperBlock() {
     for (int i = 0; i < NUM_NODES; i++) {
         inode[i] = Inode();
     }
 }
 
-
+/**
+ * @brief update the value of a node
+ * @param node - the new node
+ * @param index - the index of the node to update
+*/
 void SuperBlock::setNode(Inode node, int index) {
     inode[index] = node;
 }
 
-
+/**
+ * @brief get a node from a given index in the array
+ * @param index - the index of the node to get
+ * @return Inode - the requested Inode
+*/
 Inode SuperBlock::getNode(uint8_t index) {
     if (index == INVALID_NODE_NUM) {
         return Inode();
@@ -24,38 +36,53 @@ Inode SuperBlock::getNode(uint8_t index) {
     return inode[index];
 }
 
+/**
+ * @brief set a block in free block list to used (inclusive)
+ * @param start - the start of the section
+ * @param end - the last block of the section
+*/
 void SuperBlock::setBlock(int start, int end) {
     for (int i = start; i <= end; i++) {
         if (free_block_list[i] == 1) {
-            cerr << "Brian you fucked up" << endl;
+            cerr << "Block is already in use" << endl;
             return;
         }
         free_block_list[i] = 1;
     }
 }
 
-
+/**
+ * @brief free a block in free block list to used (inclusive)
+ * @param start - the start of the section
+ * @param end - the last block of the section
+*/
 void SuperBlock::clearBlock(int start, int end) { 
+
     for (int i = start; i <= end; i++) {
         if (free_block_list[i] == 0) {
-            cerr << "Brian you fucked up" << endl;
+            cerr << "Block is already free" << endl;
             return;
         }
         free_block_list[i] = 0;
     }
 }
 
+/**
+ * @brief get the directory structure of the file
+ * @return map - a map of each dir to their child nodes
+*/
 map<uint8_t, vector<uint8_t>> SuperBlock::getDirectoryMap() {
     return directoryStructure;
 }
-
-// TODO FIX NAME IN DIRECTORY CHECK
 
 ///////////////////////////////////////////////////
 // Consistency Checks
 ///////////////////////////////////////////////////
 
-
+/**
+ * @brief check all consitency conditions in the super block
+ * @return int - 0 if no error, otherwise the error code of the first error that happens
+*/
 int SuperBlock::checkConsistency() {
     if (!checkFreeList()) {
         return 1;
@@ -82,7 +109,6 @@ int SuperBlock::checkConsistency() {
 
 bool SuperBlock::checkFreeList() {
 
-    // cout << free_block_list << endl;
 
     bool blockIsUsed;
     for (int i = 1; i < NUM_BLOCKS; i++) {
@@ -91,6 +117,9 @@ bool SuperBlock::checkFreeList() {
             if (inode[j].blockInNodeRange(i)) {
                 // block should be free but isn't
                 if (free_block_list[i] != 1) {
+                    // cout << inode[j].getStartBlock() << endl;
+                    // cout << inode[j].getEndIndex() << endl;
+                    // cout << i << endl;
                     cout << "block " << i << " should be free but isn't, in use by inode: " << j << endl;
                     return false;
                 } else {
@@ -189,7 +218,7 @@ bool SuperBlock::checkNodeParent() {
                 return false;
             }
             else if (parent >= 0 && parent <= 125) {
-                if (!inode[parent].nodeInUse() || !inode[parent].isAFile()) {
+                if (!inode[parent].nodeInUse() || inode[parent].isAFile()) {
                     return false;
                 }
             }
@@ -208,9 +237,11 @@ bool SuperBlock::checkNodeParent() {
 void SuperBlock::fixFreeBlockList() {
     int k;
     for (int i = 0; i < (NUM_BLOCKS / BITS_IN_BYTE); i++) {
-        for (int j = (i * BITS_IN_BYTE); j < (BITS_IN_BYTE / 2); j++) {
-            k = BITS_IN_BYTE - j - 1;
+        int b = 0;
+        for (int j = (i * BITS_IN_BYTE); j < ((i * BITS_IN_BYTE) + (BITS_IN_BYTE / 2)); j++) {
+            k = BITS_IN_BYTE + (i * BITS_IN_BYTE) - 1 - b;
             swap(free_block_list[j], free_block_list[k]);
+            b++;
         }
     }
 }
@@ -307,6 +338,7 @@ void SuperBlock::deleteNode(const string &name, const uint8_t cwd) {
         }
     }
     inode[index] = Inode();
+    assert(!inode[index].nodeInUse());
 }
 
 
@@ -315,7 +347,6 @@ void SuperBlock::deleteFile(uint8_t index) {
     int start = n.getStartBlock();
     int end = n.getEndIndex();
     clearBlock(start, end);
-    inode[index] = Inode();
 }
 
 
@@ -337,4 +368,22 @@ int SuperBlock::findNewStartBlock(int oldStart) {
         i--;
     }
     return i + 1;
+}
+
+void SuperBlock::printFBL() {
+    for (int i = 0; i < 16; i++) {
+        cout << "|";
+        for (int j = 0; j < 8; j++) {
+            cout << free_block_list[j + (8*i)];
+        }
+        cout << "|";
+    }
+    cout << endl;
+}
+
+
+void SuperBlock::printNodes() {
+    for (int i = 0; i < NUM_NODES; i++) {
+        cout << inode[i].str() << endl;
+    }
 }

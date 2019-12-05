@@ -30,6 +30,7 @@ int main(int argc, char* argv[]) {
         } else {
             cerr << "Command Error: " << filename << ", " << i << endl;
         }
+        // cout << endl;
         i++;
         commandQueue.pop();
     }

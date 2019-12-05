@@ -6,8 +6,6 @@
 #include "Constants.hpp"
 using namespace std;
 
-// TODO: implement the rest of the checks
-
 CommandParser::CommandParser() {}
 
 
@@ -19,7 +17,7 @@ vector<string> CommandParser::parse(const string &commandString) {
 
 bool CommandParser::validate() {
     string command = commandTokens[0];
-    cout << command << " : ";
+    // cout << command << " : ";
     if (commandMap.find(command) == commandMap.end()) {
         return false;
     } else {

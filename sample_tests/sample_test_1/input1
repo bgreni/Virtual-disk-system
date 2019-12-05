@@ -1,15 +1,4 @@
 M disk1
 C file1 1
-B helloworld
-W file1 0
-C file2 10
-C file3 12
-C file4 3
-C file5 9
-C file6 20
-C file7 2
-D file6
-D file4
-D file2
-O
-R file1 0
+M FAKEDISK
+L

@@ -26,6 +26,7 @@ class SuperBlock {
         void setBlock(int start, int end);
         void clearBlock(int start, int end);
         void fixFreeBlockList();
+        
         int checkConsistency();
         int findFreeNode();
         bool validNewName(const string &name, const uint8_t cwd);
@@ -37,4 +38,7 @@ class SuperBlock {
         map<uint8_t, vector<uint8_t>> getDirectoryMap();
         bool isFreeBlock(int start, int end);
         int findNewStartBlock(int oldStart);
+
+        void printFBL();
+        void printNodes();
 };

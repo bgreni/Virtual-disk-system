@@ -8,6 +8,11 @@
 
 typedef bool (CommandParser::*FunctionPointer)();
 
+/**
+ * Putting all my constants here for the good practice
+*/
+
+
 const int NUM_NODES = 126;
 const int NUM_BLOCKS = 128;
 const size_t MAX_NAME_LEN = 5;

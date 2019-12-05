@@ -8,3 +8,7 @@ extra error checking:
 
 figured how to sort inodes here
 https://stackoverflow.com/questions/1380463/sorting-a-vector-of-custom-object
+
+
+# Design
+

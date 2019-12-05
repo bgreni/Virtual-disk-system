@@ -6,6 +6,9 @@
 
 using namespace std;
 
+/**
+ * @brief default constructor
+*/
 Inode::Inode() {
     usedSize = 0;
     startBlock = 0;
@@ -15,6 +18,13 @@ Inode::Inode() {
     }
 }
 
+/**
+ * @brief constructor with arguments
+ * @param name - the name of the file/directory
+ * @param size - the size of the file, is 0 if its a directory
+ * @param startBlock - the index of the first block used by the file, also 0 if a directory
+ * @param parent - the index of the parent node of this node
+*/
 Inode::Inode(const string &name, int size, int startBlock, int parent) {
     setName(name);
     setInUse(true);
@@ -30,22 +40,43 @@ Inode::Inode(const string &name, int size, int startBlock, int parent) {
     }
 }
 
+/**
+ * @brief returns true if the node is currently in use, denoted by the first bit of the usedSize
+ * @return bool - whether the first bit of usedSize if 1
+*/
 bool Inode::nodeInUse() {
     return (usedSize >> 7) == 1;
 }
 
+/**
+ * @brief returns true if the index is within the range of the blocks used by the node
+ * @param index - the block number to check
+ * @return - whether the index is in the range of the node
+*/
 bool Inode::blockInNodeRange(int index) {
     return index >= startBlock && index <= getEndIndex();
 }
 
+/**
+ * @brief returns the block index of the last block used by the node
+ * @return int - the index of the block
+*/
 int Inode::getEndIndex() {
     return (startBlock + getUsedSize()) - 1;
 }
 
+/**
+ * @brief returns true if every bit in this node is zero
+ * @return bool - true if the node is clean
+*/
 bool Inode::nodeIsClean() {
     return startBlock == 0 && usedSize == 0 && parent == 0 && !hasName();
 }
 
+/**
+ * @brief returns true if the name of the node has a non-zero bit in it
+ * @return bool - if the name has a non-zero bit
+*/
 bool Inode::hasName() {
     bool hasChar = false;
     for (int i = 0; i < MAX_NAME_LEN; i++) {
@@ -56,15 +87,26 @@ bool Inode::hasName() {
     return hasChar;
 }
 
-
+/**
+ * @brief returns true if the node is currently representing a file
+ * @return bool - if this node represents a file
+*/
 bool Inode::isAFile() {
     return ((parent >> 7) == 0) && nodeInUse();
 }
 
+/**
+ * @brief returns true if this node has a valid start block
+ * @return bool
+*/
 bool Inode::checkStartBlock() {
     return startBlock >= MIN_BLOCK_NUM && startBlock <= MAX_BLOCK_NUM;
 }
 
+/**
+ * @brief checks if this node represents a valid directory
+ * @return bool
+*/
 bool Inode::checkDirectoryAttributes() {
     return startBlock == 0 && getUsedSize() == 0;
 }
@@ -74,6 +116,11 @@ bool Inode::checkDirectoryAttributes() {
 ///////////////////////////////////////////////////
 
 string Inode::getName() {
+    /**
+     * converting from char array to string
+     * since the char array might not have a null byte, converting to
+     * a string via constructor was a bit buggy, so using a stringstream 
+    */
     stringstream ss;
     for(int i = 0; i < MAX_NAME_LEN; i++) {
         if (name[i] == 0) {
@@ -81,7 +128,6 @@ string Inode::getName() {
         }
         ss << name[i];
     }
-
     return ss.str();
 }
 
@@ -135,13 +181,14 @@ void Inode::setIsFile(bool isFile) {
 
 
 string Inode::str() {
- stringstream ss;
- ss << "-----------------------------" << endl;
- ss << "Used Size: " << (int)getUsedSize() << endl;
- ss << "Start Block: " << (int)getStartBlock() << endl;
- ss << "Name: " << getName() << endl;
- ss << "Is a File: " << isAFile() << endl;
- ss << "Is in use: " << nodeInUse() << endl;
- ss << "-----------------------------" << endl;
- return ss.str();
+    stringstream ss;
+    ss << "-----------------------------" << endl;
+    ss << "Used Size: " << (int)getUsedSize() << endl;
+    ss << "Start Block: " << (int)getStartBlock() << endl;
+    ss << "Name: " << getName() << endl;
+    ss << "Is a File: " << isAFile() << endl;
+    ss << "Is in use: " << nodeInUse() << endl;
+    ss << "Parent: " << (int)getParent() << endl;
+    ss << "-----------------------------" << endl;
+    return ss.str();
 }
