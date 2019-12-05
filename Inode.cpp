@@ -79,7 +79,7 @@ bool Inode::nodeIsClean() {
 */
 bool Inode::hasName() {
     bool hasChar = false;
-    for (int i = 0; i < MAX_NAME_LEN; i++) {
+    for (size_t i = 0; i < MAX_NAME_LEN; i++) {
         if (name[i] != 0) {
             hasChar = true;
         }
@@ -122,7 +122,7 @@ string Inode::getName() {
      * a string via constructor was a bit buggy, so using a stringstream 
     */
     stringstream ss;
-    for(int i = 0; i < MAX_NAME_LEN; i++) {
+    for(size_t i = 0; i < MAX_NAME_LEN; i++) {
         if (name[i] == 0) {
             break;
         }

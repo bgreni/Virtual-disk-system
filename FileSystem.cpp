@@ -167,7 +167,7 @@ void FileSystem::fs_write(const string &name, int block_num) {
 void FileSystem::fs_buff(uint8_t buff[MAX_BUFF_LEN]) {
     // clear the buffer to ensure no garbage values exist
     clearBuffer();
-    for (int i = 0; i < MAX_BUFF_LEN; i++) {
+    for (size_t i = 0; i < MAX_BUFF_LEN; i++) {
         buffer[i] = buff[i];
     }
 }
@@ -230,7 +230,7 @@ void FileSystem::fs_ls(void) {
 void FileSystem::fs_resize(const string &name, int new_size) {
     uint8_t index = superBlock.getInodeIndex(name, currentDirectory);
     Inode node = superBlock.getNode(index);
-    if (new_size > MAX_BLOCK_NUM) {
+    if ((size_t)new_size > MAX_BLOCK_NUM) {
         cerr << "Error: File " << node.getName() << " cannot be expanded to size " << new_size << endl;
         return;
     }
@@ -268,7 +268,7 @@ void FileSystem::shrinkBlock(uint8_t index, Inode &node, int newSize) {
 
     uint8_t buf[BLOCK_SIZE];
     // making sure everything is zeroed out
-    for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (size_t i = 0; i < BLOCK_SIZE; i++) {
         buf[i] = 0;
     }
 
@@ -338,7 +338,7 @@ void FileSystem::copyBlocks(Inode oldNode, Inode newNode) {
 void FileSystem::fs_defrag(void) {
     vector<Inode> nodeList;
     nodeList.reserve(127);
-    for (int i = 0; i < MAX_BLOCK_NUM; i++) {
+    for (size_t i = 0; i < MAX_BLOCK_NUM; i++) {
         Inode node = superBlock.getNode(i);
         // get all active files in the system
         if (node.nodeInUse() && node.isAFile()) {
@@ -380,7 +380,7 @@ Inode FileSystem::optimizeBlockLocation(Inode node) {
     uint8_t zeroBuf[BLOCK_SIZE];
     uint8_t readBuf[BLOCK_SIZE];
     // making sure everything is zeroed out
-    for (int i = 0; i < BLOCK_SIZE; i++) {
+    for (size_t i = 0; i < BLOCK_SIZE; i++) {
         zeroBuf[i] = 0;
     }
 
@@ -525,7 +525,7 @@ void FileSystem::close() {
  * @brief zero out the global buffer
 */
 void FileSystem::clearBuffer() {
-    for (int i = 0; i < MAX_BUFF_LEN; i++) {
+    for (size_t i = 0; i < MAX_BUFF_LEN; i++) {
         buffer[i] = 0;
     }
 }
