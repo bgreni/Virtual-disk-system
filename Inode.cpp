@@ -132,7 +132,11 @@ string Inode::getName() {
 }
 
 void Inode::setName(string newName) {
-    strcpy(name, newName.c_str());
+    size_t len = newName.length();
+    newName.copy(name, len);
+    if (len < MAX_NAME_LEN) {
+        name[len] = '\0';
+    }
 }
 
 uint8_t Inode::getUsedSize() {
