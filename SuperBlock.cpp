@@ -240,7 +240,12 @@ void SuperBlock::fixFreeBlockList() {
         int b = 0;
         for (int j = (i * BITS_IN_BYTE); j < ((i * BITS_IN_BYTE) + (BITS_IN_BYTE / 2)); j++) {
             k = BITS_IN_BYTE + (i * BITS_IN_BYTE) - 1 - b;
-            swap(free_block_list[j], free_block_list[k]);
+
+            // std::swap isn't defined for bitsets apparently so doing it manually
+            bool d = free_block_list.test(j);
+            bool f = free_block_list.test(k);
+            free_block_list.set(j, f);
+            free_block_list.set(k, d);
             b++;
         }
     }
