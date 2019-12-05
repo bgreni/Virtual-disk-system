@@ -108,7 +108,7 @@ bool CommandParser::blockNumInRange(const string &blockNum) {
     size_t block = 0;
     try {
         block = stoi(blockNum);
-    } catch (invalid_argument) {
+    } catch (const invalid_argument&) {
         return false;
     }
     if (block >= MIN_BLOCK_NUM && block <= MAX_BLOCK_NUM) {
@@ -118,13 +118,13 @@ bool CommandParser::blockNumInRange(const string &blockNum) {
 }
 
 bool CommandParser::validFileSize(const string &fileSize) {
-    size_t size = 0;
+    int size = 0;
     try {
         size = stoi(fileSize);
-    } catch(invalid_argument) {
+    } catch(const invalid_argument&) {
         return false;
     }
-    if (size > -1 && size <= MAX_BLOCK_NUM) {
+    if (size > -1 && (size_t)size <= MAX_BLOCK_NUM) {
         return true;
     }
     return false;
@@ -134,7 +134,7 @@ bool CommandParser::validCreateSize(const string &size) {
     int intSize = 0;
     try {
         intSize = stoi(size);
-    } catch(invalid_argument e) {
+    } catch(const invalid_argument&) {
         return false;
     }
     if (intSize >= 0 && intSize <= 126) {
