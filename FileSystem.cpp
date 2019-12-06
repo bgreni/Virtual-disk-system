@@ -45,7 +45,6 @@ void FileSystem::fs_mount(const string &new_disk_name) {
     newDisk.seekg(0);
     newDisk.read(reinterpret_cast<char*>(&newSB), sizeof(SuperBlock));
 
-    superBlock.fixFreeBlockList();
     // check the consitency of the super block
     int consistencyErrCode = superBlock.checkConsistency();
 
@@ -61,6 +60,7 @@ void FileSystem::fs_mount(const string &new_disk_name) {
     // superBlock = SuperBlock();
     newDisk.seekg(0);
     newDisk.read(reinterpret_cast<char*>(&superBlock), sizeof(SuperBlock));
+    superBlock.fixFreeBlockList();
     diskFile.close();
     diskFile.open(new_disk_name, ios::in | ios::out | ios::binary);
 }
@@ -347,7 +347,6 @@ void FileSystem::copyBlocks(Inode oldNode, Inode newNode) {
 */
 void FileSystem::fs_defrag(void) {
     vector<Inode> nodeList;
-    nodeList.reserve(127);
     for (size_t i = 0; i < NUM_NODES; i++) {
         Inode node = superBlock.getNode(i);
         // get all active files in the system
@@ -386,7 +385,6 @@ Inode FileSystem::optimizeBlockLocation(Inode node) {
     superBlock.clearBlock(node.getStartBlock(), node.getEndIndex());
     newNode.setStartBlock(index);
     superBlock.setBlock(newNode.getStartBlock(), newNode.getEndIndex());
-
     uint8_t zeroBuf[BLOCK_SIZE];
     uint8_t readBuf[BLOCK_SIZE];
     // making sure everything is zeroed out

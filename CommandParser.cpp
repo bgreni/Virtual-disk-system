@@ -17,7 +17,6 @@ vector<string> CommandParser::parse(const string &commandString) {
 
 bool CommandParser::validate() {
     string command = commandTokens[0];
-    // cout << command << " : ";
     if (commandMap.find(command) == commandMap.end()) {
         return false;
     } else {
