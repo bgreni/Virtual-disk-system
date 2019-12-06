@@ -58,7 +58,7 @@ void FileSystem::fs_mount(const string &new_disk_name) {
         currentDirectory = ROOT_DIR;
         superBlock.buildDirectoryMap();
     }
-    superBlock = SuperBlock();
+    // superBlock = SuperBlock();
     newDisk.seekg(0);
     newDisk.read(reinterpret_cast<char*>(&superBlock), sizeof(SuperBlock));
     diskFile.close();
@@ -348,7 +348,7 @@ void FileSystem::copyBlocks(Inode oldNode, Inode newNode) {
 void FileSystem::fs_defrag(void) {
     vector<Inode> nodeList;
     nodeList.reserve(127);
-    for (size_t i = 0; i < MAX_BLOCK_NUM; i++) {
+    for (size_t i = 0; i < NUM_NODES; i++) {
         Inode node = superBlock.getNode(i);
         // get all active files in the system
         if (node.nodeInUse() && node.isAFile()) {

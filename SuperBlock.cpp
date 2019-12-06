@@ -33,7 +33,8 @@ Inode SuperBlock::getNode(uint8_t index) {
     if (index == INVALID_NODE_NUM) {
         return Inode();
     }
-    return inode[index];
+    Inode node = inode[index];
+    return node;
 }
 
 /**
@@ -44,7 +45,7 @@ Inode SuperBlock::getNode(uint8_t index) {
 void SuperBlock::setBlock(int start, int end) {
     for (int i = start; i <= end; i++) {
         if (free_block_list[i] == 1) {
-            cerr << "Block is already in use" << endl;
+            cerr << "Block is already in use: " << start << " - " << end << endl;
             return;
         }
         free_block_list[i] = 1;
@@ -60,7 +61,7 @@ void SuperBlock::clearBlock(int start, int end) {
 
     for (int i = start; i <= end; i++) {
         if (free_block_list[i] == 0) {
-            cerr << "Block is already free" << endl;
+            cerr << "Block is already free: " << start << " - " << end << endl;
             return;
         }
         free_block_list[i] = 0;
@@ -388,6 +389,8 @@ void SuperBlock::printFBL() {
 
 void SuperBlock::printNodes() {
     for (int i = 0; i < NUM_NODES; i++) {
-        cout << inode[i].str() << endl;
+        if (!inode[i].nodeIsClean()) {
+            cout << inode[i].str() << endl;
+        }
     }
 }
