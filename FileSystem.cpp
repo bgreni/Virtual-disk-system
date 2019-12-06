@@ -2,7 +2,7 @@
 #include <iostream>  
 #include <map>
 #include <vector>
-#include<cstdio>
+#include <cstdio>
 #include <algorithm>
 using namespace std;
 
@@ -34,6 +34,8 @@ FileSystem::FileSystem() {
 void FileSystem::fs_mount(const string &new_disk_name) {
 
     fstream newDisk;
+    SuperBlock newSB = SuperBlock();;
+
     newDisk.open(new_disk_name, ios::in | ios::out | ios::binary);
     if (!newDisk.is_open()) {
         cerr << "Error: Cannot find disk: " << new_disk_name << endl;
@@ -41,7 +43,7 @@ void FileSystem::fs_mount(const string &new_disk_name) {
     }
     // read the first 1024 bytes into the super block
     newDisk.seekg(0);
-    newDisk.read(reinterpret_cast<char*>(&superBlock), sizeof(SuperBlock));
+    newDisk.read(reinterpret_cast<char*>(&newSB), sizeof(SuperBlock));
 
     superBlock.fixFreeBlockList();
     // check the consitency of the super block
@@ -58,6 +60,7 @@ void FileSystem::fs_mount(const string &new_disk_name) {
     }
     diskFile.close();
     diskFile.open(new_disk_name, ios::in | ios::out | ios::binary);
+    superBlock = newSB;
 }
 
 /**

@@ -1,4 +1,5 @@
 M disk1
-C file1 1
-M FAKEDISK
-L
+C file1 2
+C file2 4
+D file1
+O

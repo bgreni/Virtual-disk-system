@@ -9,7 +9,7 @@ using namespace std;
 
 class SuperBlock {
     private:
-        bool checkFreeList();
+        bool checkFreeList();                                           // check that the free block list is consistent with inodes
         bool checkUniqueNames();
         bool checkFreeNodes();
         bool checkFileStart();
