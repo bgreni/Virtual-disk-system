@@ -160,7 +160,7 @@ void FileSystem::fs_write(const string &name, int block_num) {
     }
     int size = node.getUsedSize();
     if (block_num < 0 || block_num > size - 1) {
-        cerr << name << " does not have block " << block_num << endl;
+        cerr << "Error: " << name << " does not have block " << block_num << endl;
         return;
     }
     int start = node.getStartBlock();

@@ -3,7 +3,7 @@
 #include <string>
 using namespace std;
 
-// making a global because making it a member variable would read/write from the disk
+// making a global because making it a member variable would mess with read/write from the disk
 map<uint8_t, vector<uint8_t>> directoryStructure;
 
 /**
@@ -107,9 +107,11 @@ int SuperBlock::checkConsistency() {
 }
 
 
-
+/**
+ * @brief checks that the free block list and the inodes are consistent
+ * @return bool - returns true if it is consistent
+*/
 bool SuperBlock::checkFreeList() {
-
 
     bool blockIsUsed;
     for (int i = 1; i < NUM_BLOCKS; i++) {
@@ -118,25 +120,19 @@ bool SuperBlock::checkFreeList() {
             if (inode[j].blockInNodeRange(i)) {
                 // block should be free but isn't
                 if (free_block_list[i] != 1) {
-                    // cout << inode[j].getStartBlock() << endl;
-                    // cout << inode[j].getEndIndex() << endl;
-                    // cout << i << endl;
-                    // cout << "block " << i << " should be free but isn't, in use by inode: " << j << endl;
                     return false;
                 } else {
                     // block is used by more than one node
                     if (blockIsUsed) {
-                        // cout << "block " << i << " is used by more than one node" << endl;
                         return false;
                     } else {
-                        // cout << "block: " << i << " is in use" << endl;
                         blockIsUsed = true;
                     }
                 }
             }
         }
+        // block should be in use but isn't
         if (free_block_list[i] == 1 && !blockIsUsed) {
-            // cout << "block " << i << " should be in use but isn't" << endl;
             return false;
         }
     }
@@ -144,7 +140,10 @@ bool SuperBlock::checkFreeList() {
 }
 
 
-
+/**
+ * @brief checks that all names in each directory are unique
+ * @return bool - true if all names are unique
+*/
 bool SuperBlock::checkUniqueNames() {
     map<int, set<string>> nameMap;
     for (int i = 0; i < NUM_NODES; i++) {
@@ -154,6 +153,7 @@ bool SuperBlock::checkUniqueNames() {
             if (nameMap.find(currNode.getParent()) == nameMap.end()) {
                 nameMap[currNode.getParent()] = set<string>();
             }
+            // parent directory already contatins this name
             if (nameMap[currNode.getParent()].find(currNode.getName()) != nameMap[currNode.getParent()].end()) {
                 return false;
             }
@@ -164,6 +164,10 @@ bool SuperBlock::checkUniqueNames() {
     return true;
 }
 
+/**
+ * @brief checks that all nodes are not in use are clean, and that all in use nodes at least have a name
+ * @return bool - true if all nodes pass the check
+*/
 bool SuperBlock::checkFreeNodes() {
     for (int i = 0; i < NUM_NODES; i++) {
         Inode currNode = inode[i];
@@ -182,7 +186,10 @@ bool SuperBlock::checkFreeNodes() {
     return true;
 }
 
-
+/**
+ * @brief checks that all files have valid start blocks
+ * @return bool - true if all nodes pass
+*/
 bool SuperBlock::checkFileStart() {
     for (int i = 0; i < NUM_NODES; i++) {
         Inode currNode = inode[i];
@@ -195,8 +202,10 @@ bool SuperBlock::checkFileStart() {
     return true;
 }
 
-
-
+/**
+ * @brief checks that all directories have valid attributes
+ * @return bool - true if all dirs pass
+*/
 bool SuperBlock::checkDirectories() {
     for (int i = 0; i < NUM_NODES; i++) {
         Inode currNode = inode[i];
@@ -209,6 +218,10 @@ bool SuperBlock::checkDirectories() {
     return true;
 }
 
+/**
+ * @brief checks that all nodes have a valid parent
+ * @return true if all nodes pass
+*/
 bool SuperBlock::checkNodeParent() {
     for (int i = 0; i < NUM_NODES; i++) {
         Inode currNode = inode[i];
@@ -234,7 +247,9 @@ bool SuperBlock::checkNodeParent() {
 // Helpers
 ///////////////////////////////////////////////////
 
-// this is how bad I didn't want to fiddle with bits
+/**
+ * @brief swaps the oder of each 8 bits so that the first bit is the least significant bit and I can index the list naturally
+*/
 void SuperBlock::fixFreeBlockList() {
     int k;
     for (size_t i = 0; i < (NUM_BLOCKS / BITS_IN_BYTE); i++) {
@@ -252,6 +267,10 @@ void SuperBlock::fixFreeBlockList() {
     }
 }
 
+/**
+ * @brief returns the index of the first free node in the inode array
+ * @return int - the index of the node in the array
+*/
 int SuperBlock::findFreeNode() {
     for (int i = 0; i < NUM_NODES; i++) {
         if (!inode[i].nodeInUse()) {
@@ -261,6 +280,9 @@ int SuperBlock::findFreeNode() {
     return -1;
 }
 
+/**
+ * @brief create a map of the directory structure for easier traversal
+*/
 void SuperBlock::buildDirectoryMap() {
     directoryStructure.clear();
     for (int i = 0; i < NUM_NODES; i++) {
@@ -272,11 +294,18 @@ void SuperBlock::buildDirectoryMap() {
     }
 }
 
+/**
+ * @brief checks if the given name is reserved
+ * @return true if name is reserved
+*/
 bool SuperBlock::isReservedName(const string &name) {
     return name.compare(".") == 0 || name.compare("..") == 0;
 }
 
-
+/**
+ * @brief checks that a name is unique in the given dir
+ * @return bool - true if name is unique
+*/
 bool SuperBlock::nameUniqueInDir(const string &name, const uint8_t cwd) {
     for (auto index : directoryStructure[cwd]) {
         if (name.compare(inode[index].getName()) == 0) {
@@ -286,7 +315,10 @@ bool SuperBlock::nameUniqueInDir(const string &name, const uint8_t cwd) {
     return true;
 }
 
-
+/**
+ * @brief checks if a name is valid to use in a given dir
+ * @return bool - true if the name is valid
+*/
 bool SuperBlock::validNewName(const string &name, const uint8_t cwd) {
     if (isReservedName(name)) {
         return false;
@@ -294,9 +326,12 @@ bool SuperBlock::validNewName(const string &name, const uint8_t cwd) {
     return nameUniqueInDir(name, cwd);
 }
 
+/**
+ * @brief returns the index of the first block in a contiguous section of "size" blocks
+ * @return int - the index of the first block
+*/
 int SuperBlock::findContigBlock(const int size) {
     // check if theres enough free spaces at all
-    // if (size > (free_block_list.size() - free_block_list.count()))
     size_t i = 1;
     while (i < NUM_BLOCKS) {
         if (free_block_list[i] == 0) {
@@ -315,8 +350,12 @@ int SuperBlock::findContigBlock(const int size) {
     return -1;
 }
 
-
+/**
+ * @brief get the index of an inode from its name and directory
+ * @return uint8_t - the index of the node in the list
+*/
  uint8_t SuperBlock::getInodeIndex(const string &name, const uint8_t cwd) {
+     // get all nodes in the directory
     vector<uint8_t> inCWD = directoryStructure[cwd];
     for (auto item : inCWD) {
         Inode node = inode[item];
@@ -324,10 +363,13 @@ int SuperBlock::findContigBlock(const int size) {
             return item;
         }
     }
+    // name doesn't exist in the directory
     return INVALID_NODE_NUM;
 }
 
-
+/**
+ * @brief delete a node with the given name in the given dir
+*/
 void SuperBlock::deleteNode(const string &name, const uint8_t cwd) {
     uint8_t index = getInodeIndex(name, cwd);
     if (index == INVALID_NODE_NUM) {
@@ -337,6 +379,7 @@ void SuperBlock::deleteNode(const string &name, const uint8_t cwd) {
     if (inode[index].isAFile()) {
         deleteFile(index);
     } else {
+        // if this is a directory, recursively delete children
         for (auto child : directoryStructure[index]) {
             Inode childNode = inode[child];
             deleteNode(childNode.getName(), index);
@@ -345,7 +388,9 @@ void SuperBlock::deleteNode(const string &name, const uint8_t cwd) {
     inode[index] = Inode();
 }
 
-
+/**
+ * @brief clear free block list of this file
+*/
 void SuperBlock::deleteFile(uint8_t index) {
     Inode n = inode[index];
     int start = n.getStartBlock();
@@ -354,6 +399,10 @@ void SuperBlock::deleteFile(uint8_t index) {
 }
 
 
+/**
+ * @brief checks if range of start-end is a free contiguous section
+ * @return bool - true if all  blocks in range are free
+*/
 bool SuperBlock::isFreeBlock(int start, int end) {
     for (int i = start+1; i <= end; i++) {
         if (free_block_list[i] == 1) 
@@ -362,7 +411,10 @@ bool SuperBlock::isFreeBlock(int start, int end) {
     return true;
 }
 
-
+/**
+ * @brief find the earliest possible start block given the current start
+ * @return int - the index of the new start block
+*/
 int SuperBlock::findNewStartBlock(int oldStart) {
     int i = oldStart - 1;
     if (free_block_list[i] == 1) {
@@ -373,6 +425,10 @@ int SuperBlock::findNewStartBlock(int oldStart) {
     }
     return i + 1;
 }
+
+/////////////////////////////////////////////
+// printing methods for debugging
+////////////////////////////////////////////
 
 void SuperBlock::printFBL() {
     for (int i = 0; i < 16; i++) {
