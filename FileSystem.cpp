@@ -45,8 +45,9 @@ void FileSystem::fs_mount(const string &new_disk_name) {
     newDisk.seekg(0);
     newDisk.read(reinterpret_cast<char*>(&newSB), sizeof(SuperBlock));
 
+    newSB.fixFreeBlockList();
     // check the consitency of the super block
-    int consistencyErrCode = superBlock.checkConsistency();
+    int consistencyErrCode = newSB.checkConsistency();
 
     if (consistencyErrCode != 0) {
         cout << "Error: File system in " << new_disk_name << " is inconsistent (error code: " << consistencyErrCode << ")" << endl;

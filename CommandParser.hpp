@@ -6,7 +6,6 @@ using namespace std;
 
 class CommandParser {
     private:
-        // bool commandIsValid;
         vector<string> commandTokens;                       // vector of tokens for the current command being parsed
         bool nameTooLong(const string &name);               // checks if a filename is longer than 5 characters
         void tokenize(const string &commandString);         // tokenize the initial command string

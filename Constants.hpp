@@ -47,6 +47,7 @@ const string CD = "Y";
 const string CUR_DIR_STRING = ".";
 const string PARENT_DIR_STRING = "..";
 
+// a map from the command strings to their CommandParser check functions
 static map<string, FunctionPointer>  commandMap {
     {"M", &CommandParser::checkMount},
     {"C", &CommandParser::validCreateOp},

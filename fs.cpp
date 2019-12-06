@@ -9,11 +9,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    fstream err("stdr.txt");
-    cerr.rdbuf(err.rdbuf());
-
     string filename(argv[1]);
-    cout << filename << endl;
     
     FileSystem fs = FileSystem();
     CommandParser parser = CommandParser();
@@ -22,7 +18,6 @@ int main(int argc, char* argv[]) {
     }
     queue<string> commandQueue = fs.readCommands();
 
-    cout << commandQueue.size() << endl;
     int i = 1;
     while (!commandQueue.empty()) {
         vector<string> tokens = parser.parse(commandQueue.front());
@@ -35,6 +30,5 @@ int main(int argc, char* argv[]) {
         commandQueue.pop();
     }
     fs.close();
-    err.close();
     return 0;
 }

@@ -10,11 +10,11 @@ using namespace std;
 class SuperBlock {
     private:
         bool checkFreeList();                                           // check that the free block list is consistent with inodes
-        bool checkUniqueNames();
-        bool checkFreeNodes();
-        bool checkFileStart();
-        bool checkDirectories();
-        bool checkNodeParent();
+        bool checkUniqueNames();                                        // checks that each directory contains elements with unique names
+        bool checkFreeNodes();                                          // checks that all free nodes are also clean
+        bool checkFileStart();                                          // checks that all files hav valid start positions
+        bool checkDirectories();                                        // checks that all dirs hav valid attributes
+        bool checkNodeParent();                                         // checks that all nodes have valid parents
         bool isReservedName(const string &name);
         bool nameUniqueInDir(const string &name, const uint8_t cwd);
         void deleteFile(uint8_t index);

@@ -121,12 +121,12 @@ bool SuperBlock::checkFreeList() {
                     // cout << inode[j].getStartBlock() << endl;
                     // cout << inode[j].getEndIndex() << endl;
                     // cout << i << endl;
-                    cout << "block " << i << " should be free but isn't, in use by inode: " << j << endl;
+                    // cout << "block " << i << " should be free but isn't, in use by inode: " << j << endl;
                     return false;
                 } else {
                     // block is used by more than one node
                     if (blockIsUsed) {
-                        cout << "block " << i << " is used by more than one node" << endl;
+                        // cout << "block " << i << " is used by more than one node" << endl;
                         return false;
                     } else {
                         // cout << "block: " << i << " is in use" << endl;
@@ -136,7 +136,7 @@ bool SuperBlock::checkFreeList() {
             }
         }
         if (free_block_list[i] == 1 && !blockIsUsed) {
-            cout << "block " << i << " should be in use but isn't" << endl;
+            // cout << "block " << i << " should be in use but isn't" << endl;
             return false;
         }
     }
