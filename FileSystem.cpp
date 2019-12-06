@@ -34,7 +34,7 @@ FileSystem::FileSystem() {
 void FileSystem::fs_mount(const string &new_disk_name) {
 
     fstream newDisk;
-    SuperBlock newSB = SuperBlock();;
+    SuperBlock newSB = SuperBlock();
 
     newDisk.open(new_disk_name, ios::in | ios::out | ios::binary);
     if (!newDisk.is_open()) {
@@ -58,9 +58,11 @@ void FileSystem::fs_mount(const string &new_disk_name) {
         currentDirectory = ROOT_DIR;
         superBlock.buildDirectoryMap();
     }
+    superBlock = SuperBlock();
+    newDisk.seekg(0);
+    newDisk.read(reinterpret_cast<char*>(&superBlock), sizeof(SuperBlock));
     diskFile.close();
     diskFile.open(new_disk_name, ios::in | ios::out | ios::binary);
-    superBlock = newSB;
 }
 
 /**
@@ -100,14 +102,19 @@ void FileSystem::fs_create(const string &name, int size) {
  * @param name - the name of the node to be deleted
 */
 void FileSystem::fs_delete(const string &name) {
-    vector<char> zeros(BLOCK_SIZE, 0);
+    uint8_t buf[BLOCK_SIZE];
+    // making sure everything is zeroed out
+    for (size_t i = 0; i < BLOCK_SIZE; i++) {
+        buf[i] = 0;
+    }
     int index = superBlock.getInodeIndex(name, currentDirectory);
     Inode node = superBlock.getNode(index);
     int pos = node.getStartBlock() * BLOCK_SIZE;
     // zero out the data blocks
     for (int i = 0; i < node.getUsedSize(); i++) {
+        cout << node.getUsedSize() << endl;
         diskFile.seekg(pos);
-        diskFile.write(reinterpret_cast<char*>(&zeros), BLOCK_SIZE);
+        diskFile.write(reinterpret_cast<char*>(&buf), BLOCK_SIZE);
         pos += BLOCK_SIZE;
     }
     superBlock.deleteNode(name, currentDirectory);
