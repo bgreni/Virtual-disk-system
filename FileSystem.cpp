@@ -9,10 +9,8 @@ using namespace std;
 /**
  * using this sorter to create a list of inodes sorted by start block for the defrag function
 */
-struct defragSorter
-{
-    inline bool operator() (const Inode& node1, const Inode& node2)
-    {
+struct defragSorter {
+    inline bool operator() (const Inode& node1, const Inode& node2) {
         return (node1.getStartBlock() < node2.getStartBlock());
     }
 };
@@ -58,7 +56,6 @@ void FileSystem::fs_mount(const string &new_disk_name) {
         currentDirectory = ROOT_DIR;
         superBlock.buildDirectoryMap();
     }
-    // superBlock = SuperBlock();
     newDisk.seekg(0);
     newDisk.read(reinterpret_cast<char*>(&superBlock), sizeof(SuperBlock));
     superBlock.fixFreeBlockList();
@@ -113,7 +110,6 @@ void FileSystem::fs_delete(const string &name) {
     int pos = node.getStartBlock() * BLOCK_SIZE;
     // zero out the data blocks
     for (int i = 0; i < node.getUsedSize(); i++) {
-        cout << node.getUsedSize() << endl;
         diskFile.seekg(pos);
         diskFile.write(reinterpret_cast<char*>(&buf), BLOCK_SIZE);
         pos += BLOCK_SIZE;
@@ -380,8 +376,6 @@ Inode FileSystem::optimizeBlockLocation(Inode node) {
         return Inode();
     }
     Inode newNode = node;
-    // cout << superBlock.free_block_list << endl;
-    // cout << index << endl;
 
     // modify the free block list as required
     superBlock.clearBlock(node.getStartBlock(), node.getEndIndex());

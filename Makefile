@@ -23,3 +23,7 @@ fs.o: fs.cpp
 Inode.o: Inode.cpp Inode.hpp Constants.hpp
 SuperBlock.o: SuperBlock.cpp SuperBlock.hpp Constants.hpp
 CommandParser.o: CommandParser.cpp CommandParser.hpp Constants.hpp
+
+
+compress:
+	zip -r fs-sim.zip CommandParser.cpp CommandParser.hpp Constants.hpp FileSystem.cpp FileSystem.hpp fs.cpp Inode.cpp Inode.hpp SuperBlock.cpp SuperBlock.hpp tests.cpp readme.md Makefile
