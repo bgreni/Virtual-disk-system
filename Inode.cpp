@@ -184,9 +184,10 @@ void Inode::setIsFile(bool isFile) {
 }
 
 
-string Inode::str() {
+string Inode::str(int index) {
     stringstream ss;
     ss << "-----------------------------" << endl;
+    ss << "Index: " << index << endl;
     ss << "Used Size: " << (int)getUsedSize() << endl;
     ss << "Start Block: " << (int)getStartBlock() << endl;
     ss << "Name: " << getName() << endl;

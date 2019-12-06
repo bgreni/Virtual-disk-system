@@ -34,5 +34,5 @@ class Inode {
 		bool checkStartBlock();												// returns true if the inode has a valid start block number
 		bool checkDirectoryAttributes();									// checks if the inode is represents a valid directory
 
-		string str();														// returns a string interpretation of the node
+		string str(int index);												// returns a string interpretation of the node
 };

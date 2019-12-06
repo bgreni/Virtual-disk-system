@@ -9,6 +9,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    fstream err("stdr.txt");
+    cerr.rdbuf(err.rdbuf());
+
     string filename(argv[1]);
     cout << filename << endl;
     
@@ -22,9 +25,7 @@ int main(int argc, char* argv[]) {
     cout << commandQueue.size() << endl;
     int i = 1;
     while (!commandQueue.empty()) {
-        // cout << commandQueue.front() << endl;
         vector<string> tokens = parser.parse(commandQueue.front());
-        // cout << "Command is valid: " << parser.validate() << endl;
         if (parser.validate()) {
             fs.runCommand(tokens);
         } else {
@@ -34,5 +35,6 @@ int main(int argc, char* argv[]) {
         commandQueue.pop();
     }
     fs.close();
+    err.close();
     return 0;
 }

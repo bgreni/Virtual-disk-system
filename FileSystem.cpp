@@ -131,12 +131,12 @@ void FileSystem::fs_read(const string &name, int block_num) {
     uint8_t index = superBlock.getInodeIndex(name, currentDirectory);
     Inode node = superBlock.getNode(index);
     if (index == INVALID_NODE_NUM || !node.isAFile()) {
-        cerr << "Error: " << name << " does not exist" << endl;
+        cerr << "Error: File" << name << " does not exist" << endl;
         return;
     }
     int size = node.getUsedSize();
     if (block_num < 0 || block_num > size - 1) {
-        cerr << name << " does not have block " << block_num << endl;
+        cerr << "Error: " << name << " does not have block " << block_num << endl;
         return;
     }
     int start = node.getStartBlock();
@@ -198,7 +198,6 @@ void printFile(const char* name, const int size) {
  * @brief prints the contents of the current working directory
 */
 void FileSystem::fs_ls(void) {
-    cout << endl;
     superBlock.buildDirectoryMap();
     // get the directory hierarchy of the disk
     map<uint8_t, vector<uint8_t>> directoryStructure = superBlock.getDirectoryMap();
@@ -301,8 +300,10 @@ void FileSystem::shrinkBlock(uint8_t index, Inode &node, int newSize) {
  * @param newSize - the new size of the file
 */
 void FileSystem::growBlock(uint8_t index, Inode &node, int newSize) {
+
     int oldEnd = node.getEndIndex();
     node.setUsedSize(newSize);
+    Inode newNode = node;
     int newEnd = node.getEndIndex();
     if (superBlock.isFreeBlock(oldEnd + 1, newEnd)) {
         superBlock.setBlock(oldEnd + 1, newEnd);
@@ -312,13 +313,13 @@ void FileSystem::growBlock(uint8_t index, Inode &node, int newSize) {
             cerr << "Error: File " << node.getName() << " cannot be expanded to size " << newSize << endl;
             return;
         }
-        Inode newNode = node;
         superBlock.clearBlock(node.getStartBlock(), oldEnd);
         newNode.setStartBlock(newStart);
         superBlock.setBlock(newStart, newNode.getEndIndex());
         copyBlocks(node, newNode);
         superBlock.setNode(newNode, index);
     }
+    superBlock.setNode(newNode, index);
 }
 
 /**

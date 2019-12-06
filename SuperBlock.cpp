@@ -291,7 +291,6 @@ bool SuperBlock::validNewName(const string &name, const uint8_t cwd) {
     if (isReservedName(name)) {
         return false;
     }
-    return true;
     return nameUniqueInDir(name, cwd);
 }
 
@@ -390,7 +389,7 @@ void SuperBlock::printFBL() {
 void SuperBlock::printNodes() {
     for (int i = 0; i < NUM_NODES; i++) {
         if (!inode[i].nodeIsClean()) {
-            cout << inode[i].str() << endl;
+            cout << inode[i].str(i) << endl;
         }
     }
 }

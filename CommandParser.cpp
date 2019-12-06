@@ -19,7 +19,7 @@ bool CommandParser::validate() {
     string command = commandTokens[0];
     if (commandMap.find(command) == commandMap.end()) {
         return false;
-    } else {
+    } else {;
         FunctionPointer p = commandMap[command];
         return (this->*p)();
     }
@@ -94,9 +94,9 @@ void CommandParser::tokenize(const string &commandString) {
     }
     
     // TODO: this crashes on linux
-    // for(string s : commandTokens) {
-    //     s.erase(remove_if(s.begin(), s.end(), ::isspace));
-    // }
+    for(string s : commandTokens) {
+        s.erase(remove_if(s.begin(), s.end(), ::isspace), s.end());
+    }
 }
 
 bool CommandParser::nameTooLong(const string &name) {
